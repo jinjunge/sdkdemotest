@@ -48,8 +48,8 @@ public class SdkDemoTest extends ActivityInstrumentationTestCase2 {
             String password = "tryme";// 默认的root账户密码为空  
             int rowCount ;
             int rowCount1 ;
-            int rowCount2;
-            int rowCount3;
+            int rowCount2 ;
+            int rowCount3 ;
             boolean flag =false;
             Connection conn = DriverManager.getConnection("jdbc:mysql://120.26.3.132:3306/" + databaseName, userName, password);    
             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE ,ResultSet.CONCUR_READ_ONLY);   
@@ -84,7 +84,7 @@ public class SdkDemoTest extends ActivityInstrumentationTestCase2 {
 		        	break;
 		        }
 		    }
-		    assertTrue(toast.equals("支付成功"));                                //toast显示支付成功验证
+		    assertTrue(toast,toast.equals("支付成功"));                                //toast显示支付成功验证
 		 
 		    solo.sleep(15000);
 
@@ -110,13 +110,13 @@ public class SdkDemoTest extends ActivityInstrumentationTestCase2 {
 		   rowCount1 = rs1.getRow();
 		   Log.i("gejinjun","rowCount1 is"+rowCount1);
 		   
-		   ResultSet rs3=stmt.executeQuery(sql_network);
-		   rs3.last();
-		   rowCount3 = rs3.getRow();
-		   Log.i("gejinjun","rowCount1 is"+rowCount1);
+//		   ResultSet rs3=stmt.executeQuery(sql_network);
+//		   rs3.last();
+//		   rowCount3 = rs3.getRow();
+//		   Log.i("gejinjun","rowCount3 is"+rowCount3);
 		   
 		   assertTrue("bills表中数据未新增2条",rowCount1-rowCount==2);
-		   assertTrue("newtwork表中数据未新增1条",rowCount3-rowCount2==1);
+//		   assertTrue("newtwork表中数据未新增1条",rowCount3-rowCount2==1);
 		   rs1.first();
 		   int r1 = Integer.valueOf(rs1.getString(1)).intValue();
 		   int t1 = Integer.valueOf(rs1.getString(2)).intValue();
@@ -133,6 +133,11 @@ public class SdkDemoTest extends ActivityInstrumentationTestCase2 {
 		   }
 		   assertTrue("数据库表中result或type状态不正确",flag);
 		   
+		   ResultSet rs3=stmt.executeQuery(sql_network);
+		   rs3.last();
+		   rowCount3 = rs3.getRow();
+		   assertTrue("newtwork表中数据未新增1条",rowCount3-rowCount2==1);
+		   Log.i("gejinjun","rowCount3 is"+rowCount3);
 		   rs3.first();
 		   int result_code= Integer.valueOf(rs3.getString(1)).intValue();
 		   assertTrue("network表result_code不正确",result_code==0);

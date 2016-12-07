@@ -81,7 +81,7 @@ public class util{
 			int total = reader.read();
 			for (int i = 0; i < total && reader.readLine() != null; i++) {
 				line = reader.readLine();
-				Log.i("gejinjun","循环第"+i+"次 "+line);
+				//Log.i("gejinjun","循环第"+i+"次 "+line);
 				if (line.indexOf(text) > 0) {
 					flag = true;
 					// logcat打印信息在这里可以监听到

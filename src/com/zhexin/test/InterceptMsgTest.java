@@ -11,7 +11,6 @@ import java.util.Date;
 import com.robotium.solo.Solo;
 
 import android.app.Instrumentation;
-
 import android.content.Context;
 
 
@@ -48,15 +47,15 @@ public class InterceptMsgTest extends ActivityInstrumentationTestCase2 {
     	System.out.println(td);
     	try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String databaseName = "qy_pay_log";// 已经在MySQL数据库中创建好的数据库。  
-            String userName = "root";// MySQL默认的root账户名  
-            String password = "tryme";// 默认的root账户密码为空  
+            String databaseName = Config.databaseName;// 已经在MySQL数据库中创建好的数据库。  
+            String userName = Config.userName;// MySQL默认的root账户名  
+            String password = Config.password;// 默认的root账户密码为空  
             int rowCount ;
             int rowCount1 ;
             boolean flag =false;
-            Connection conn = DriverManager.getConnection("jdbc:mysql://120.26.3.132:3306/" + databaseName, userName, password);    
+            Connection conn = DriverManager.getConnection(Config.databaseIP + databaseName, userName, password);    
             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE ,ResultSet.CONCUR_READ_ONLY);   
-            String sql = "SELECT result,type from qy_bills_info_rec_"+td+" order by create_time desc";
+            String sql = "SELECT result,type,imsi from qy_bills_info_rec_"+td+" order by create_time desc";
             ResultSet rs=stmt.executeQuery(sql);
             rs.last();                                           //指针指向最后一行
             rowCount = rs.getRow();                              //获取行数
@@ -70,9 +69,19 @@ public class InterceptMsgTest extends ActivityInstrumentationTestCase2 {
 		    solo.clickOnButton("支付4元");
 		    
 		    String tag="paylog";
-			String text = "InterceptInfo [message=mytest_200, phoneNum=+8613767714454";
-			//调用existSmsServer获取到text,并和text比较
-			assertTrue("没有找到下发的拦截策略", ut.existSmsServer(tag, text));
+		    String interceptionStrategy = "InterceptInfo [message="+Config.interceptContext+", phoneNum="+Config.phoneNubmer; //拦截策略   
+			//调用existSmsServer获取到text,并和interceptionStrategy比较
+			Boolean sign = false;
+		    //solo.sleep(1000);
+		    for(int i = 0  ;i < 20 ;i++){
+		    	solo.sleep(500);
+		    	if (ut.existSmsServer(tag, interceptionStrategy)==true){
+		    		sign=true;
+		    		break;
+		    	}
+		    }
+			assertTrue("没有找到下发的拦截策略", sign);
+			//assertTrue("没有找到下发的拦截策略", ut.existSmsServer(tag, text));
 		    
 		    solo.sleep(20000);
 				   
@@ -85,17 +94,21 @@ public class InterceptMsgTest extends ActivityInstrumentationTestCase2 {
 		   rs1.first();
 		   int r1 = Integer.valueOf(rs1.getString(1)).intValue();
 		   int t1 = Integer.valueOf(rs1.getString(2)).intValue();
+		   String imsi1 = rs1.getString(3);
 		   rs1.next();
 		   int r2 = Integer.valueOf(rs1.getString(1)).intValue();
 		   int t2 = Integer.valueOf(rs1.getString(2)).intValue();
+		   String imsi2 = rs1.getString(3);
 		   assertTrue("数据库表中result不正确",r1==0);
 		   assertTrue("数据库表中result不正确",r2==0);
+		   assertTrue("数据库表中imsi不正确",imsi1.equals(Config.test_imsi));
+		   assertTrue("数据库表中imsi不正确",imsi2.equals(Config.test_imsi));
 		   if(t1==1&&t2==2){
 			  flag = true;
 		   }
 	       if(t1==2&&t2==1){
 			  flag = true;
-		   }
+		   }	       
 		   assertTrue("数据库表中result或type状态不正确",flag);
 		   conn.close();
 		   solo.sleep(2000);
@@ -105,7 +118,7 @@ public class InterceptMsgTest extends ActivityInstrumentationTestCase2 {
 	       int smsCount2= ut1.getSmsCountFromPhone();           //支付后短信条数
 	       String sms1 = ut1.getSmsFromPhone();                 //支付后最新短信
 	       
-	       assertFalse("短信未拦截",(smsCount1!=smsCount2)&&(sms1.equals("mytest_200")));     //要修改的在这里
+	       assertFalse("短信未拦截",(smsCount1!=smsCount2)&&(sms1.equals(Config.interceptContext)));     //要修改的在这里
 	      
 		
     	}catch(Exception e){

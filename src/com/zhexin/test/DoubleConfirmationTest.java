@@ -37,7 +37,7 @@ public class DoubleConfirmationTest extends  ActivityInstrumentationTestCase2{
     	solo.finishOpenedActivities();
     }
 	public void testDoubleConfirmation(){
-		//VerifyInfo [code=, length=2, match=mytest_200, phoneNum=+8613767714454
+		
 		solo.sleep(3000);
 		Date now=new Date();
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -45,13 +45,11 @@ public class DoubleConfirmationTest extends  ActivityInstrumentationTestCase2{
     	Log.i("gejinjun",td);
     	try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String databaseName = "qy_pay_log";// 已经在MySQL数据库中创建好的数据库。  
-            String userName = "root";// MySQL默认的root账户名  
-            String password = "tryme";// 默认的root账户密码为空  
+
             int rowCount ;
             int rowCount1 ;
             boolean flag =false;
-            Connection conn = DriverManager.getConnection("jdbc:mysql://120.26.3.132:3306/" + databaseName, userName, password);    
+            Connection conn = DriverManager.getConnection("jdbc:mysql://120.26.3.132:3306/" + Config.databaseName, Config.userName, Config.password);    
             Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE ,ResultSet.CONCUR_READ_ONLY);   
             String sql = "SELECT result,type from qy_bills_info_rec_"+td+" order by create_time desc";
             ResultSet rs=stmt.executeQuery(sql);
